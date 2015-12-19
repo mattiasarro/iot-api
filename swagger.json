@@ -1,0 +1,129 @@
+{
+    "swagger": "2.0",
+    "host": "your.coap.server",
+    "basePath": "/api",
+    "info": {
+        "version": "1.1",
+        "title": "2IMN20 Practical API",
+        "description": ""
+    },
+    "tags": [
+        {
+            "name": "Manager",
+            "description": "API endpoints of our parking lot manager"
+        }
+    ],
+    "paths": {
+        "/parking_spots": {
+            "get": {
+                "tags": [
+                    "Manager"
+                ],
+                "description": "Gets `ParkingSpot` objects.\nOptional query param of **state** allows us to filter on free|reserved|occupied parking spots.\n",
+                "parameters": [
+                    {
+                        "name": "state",
+                        "in": "query",
+                        "description": "State of the returned parking spots",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "free",
+                            "reserved",
+                            "occupied"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ParkingSpots",
+                            "type": "array",
+                            "items": {
+                                "title": "ParkingSpot",
+                                "$ref": "#/definitions/ParkingSpot"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/parking_spots/{parkingSpotId}": {
+            "get": {
+                "tags": [
+                    "Manager"
+                ],
+                "description": "Gets a particular `ParkingSpot` object.\n",
+                "parameters": [
+                    {
+                        "name": "parkingSpotId",
+                        "in": "path",
+                        "description": "ParkingSpot ID",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ParkingSpot",
+                            "type": "object",
+                            "$ref": "#/definitions/ParkingSpot"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ParkingSpot": {
+            "type": "object",
+            "properties": {
+                "parkingSpotId": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "free",
+                        "reserved",
+                        "occupied"
+                    ]
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "reservations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Reservation"
+                    }
+                }
+            }
+        },
+        "Reservation": {
+            "type": "object",
+            "description": "Each parking spot can have many reservations.",
+            "properties": {
+                "reservationId": {
+                    "type": "string",
+                    "description": "Id of the reservation"
+                },
+                "vehicleId": {
+                    "type": "string",
+                    "description": "Id of the vehicle that either reserved or occupies the spot."
+                },
+                "from": {
+                    "type": "number",
+                    "description": "Start time (unix timestamp) of reservation."
+                },
+                "to": {
+                    "type": "number",
+                    "description": "Start time (unix timestamp) of reservation."
+                }
+            }
+        }
+    }
+}
