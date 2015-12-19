@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "host": "your.coap.server",
-    "basePath": "/api",
+    "basePath": "/",
     "info": {
         "version": "1.1",
         "title": "2IMN20 Practical API",
@@ -15,6 +15,10 @@
         {
             "name": "ParkingSpot",
             "description": "CoAP server (runs on Pi)"
+        },
+        {
+            "name": "Optional",
+            "description": "endpoints that do not have to be implemented to fulfill the spec"
         }
     ],
     "paths": {
@@ -83,9 +87,10 @@
         "/MANAGER_IP/parking_spots/{parkingSpotId}/reservations": {
             "get": {
                 "tags": [
-                    "Manager"
+                    "Manager",
+                    "Optional"
                 ],
-                "description": "Gets reservations of a particular ParkingSpot. This endpoint is here mostly for the sake of completeness, as the information is embedded in a ParkingSpot object anyway.\n",
+                "description": "[OPTIONAL: this is to showcase how a REST interface would look like, but is not required to fulfill the spec]\nGets reservations of a particular ParkingSpot. This endpoint is here mostly for the sake of completeness, as the information is embedded in a ParkingSpot object anyway.\n",
                 "parameters": [
                     {
                         "name": "parkingSpotId",
@@ -141,7 +146,17 @@
                         "description": "Successful reservation",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/Response"
+                            "properties": {
+                                "statusCode": {
+                                    "type": "integer"
+                                },
+                                "statusMessage": {
+                                    "type": "string"
+                                },
+                                "reservationId": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
                     "409": {
@@ -157,7 +172,8 @@
         "/MANAGER_IP/parking_spots/{parkingSpotId}/reservations/{reservationId}": {
             "put": {
                 "tags": [
-                    "Manager"
+                    "Manager",
+                    "Optional"
                 ],
                 "description": "Note: This is an optional feature, not needed according to spec.\nUpdate the reservation. \n \n",
                 "parameters": [
@@ -239,21 +255,12 @@
                 }
             }
         },
-        "/PARKING_SPOT_IP/parking_spots/{parkingSpotId}": {
+        "/PARKING_SPOT_IP/": {
             "get": {
                 "tags": [
                     "ParkingSpot"
                 ],
-                "description": "Gets a particular `ParkingSpot` object.\n",
-                "parameters": [
-                    {
-                        "name": "parkingSpotId",
-                        "in": "path",
-                        "description": "ParkingSpot ID",
-                        "type": "string",
-                        "required": true
-                    }
-                ],
+                "description": "Returns ParkingSpot object.\n",
                 "responses": {
                     "200": {
                         "description": "Successful response",
@@ -266,21 +273,13 @@
                 }
             }
         },
-        "/PARKING_SPOT_IP/parking_spots/{parkingSpotId}/reservations": {
+        "/PARKING_SPOT_IP/reservations": {
             "get": {
                 "tags": [
-                    "ParkingSpot"
+                    "ParkingSpot",
+                    "Optional"
                 ],
-                "description": "Gets reservations of a particular ParkingSpot. This endpoint is here mostly for the sake of completeness, as the information is embedded in a ParkingSpot object anyway.\n",
-                "parameters": [
-                    {
-                        "name": "parkingSpotId",
-                        "in": "path",
-                        "description": "ParkingSpot ID",
-                        "type": "string",
-                        "required": true
-                    }
-                ],
+                "description": "[OPTIONAL: this is to showcase how a REST interface would look like, but is not required to fulfill the spec]\nGets reservations of a this ParkingSpot. This endpoint is here mostly for the sake of completeness, as the information is embedded in a ParkingSpot object anyway.\n",
                 "responses": {
                     "200": {
                         "description": "Successful response",
@@ -300,13 +299,6 @@
                 ],
                 "description": "Create a reservation. Manager has to set the vehicleId and reservationId itself for security reasons. Although the 201/401 CoAP response header is sufficient as a response, we also return a JSON object that reflects this information (helpful for debugging).\n",
                 "parameters": [
-                    {
-                        "name": "parkingSpotId",
-                        "in": "path",
-                        "description": "ParkingSpot ID",
-                        "type": "string",
-                        "required": true
-                    },
                     {
                         "name": "from",
                         "in": "formData",
@@ -340,20 +332,14 @@
                 }
             }
         },
-        "/PARKING_SPOT_IP/parking_spots/{parkingSpotId}/reservations/{reservationId}": {
+        "/PARKING_SPOT_IP/reservations/{reservationId}": {
             "put": {
                 "tags": [
-                    "ParkingSpot"
+                    "ParkingSpot",
+                    "Optional"
                 ],
                 "description": "Note: This is an optional feature, not needed according to spec.\nUpdate the reservation. \n \n",
                 "parameters": [
-                    {
-                        "name": "parkingSpotId",
-                        "in": "path",
-                        "description": "ParkingSpot ID",
-                        "type": "string",
-                        "required": true
-                    },
                     {
                         "name": "reservationId",
                         "in": "path",
@@ -399,13 +385,6 @@
                 ],
                 "description": "Note: This is an optional feature, not needed according to spec.\nUpdate the reservation. \n \n",
                 "parameters": [
-                    {
-                        "name": "parkingSpotId",
-                        "in": "path",
-                        "description": "ParkingSpot ID",
-                        "type": "string",
-                        "required": true
-                    },
                     {
                         "name": "reservationId",
                         "in": "path",
@@ -442,7 +421,8 @@
                     ]
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "in cents"
                 },
                 "reservations": {
                     "type": "array",
@@ -462,7 +442,7 @@
                 },
                 "vehicleId": {
                     "type": "string",
-                    "description": "Id of the vehicle that either reserved or occupies the spot. This attribute is present only if the client is \"admin\" (e.g. Visualization Service) or vehicleId is the same as the Vehicle making the query."
+                    "description": "Id of the vehicle that either reserved the spot. This attribute is present in the output only if the client is \"admin\" (e.g. Visualization Service) or vehicleId is the same as the Vehicle making the query."
                 },
                 "from": {
                     "type": "number",
