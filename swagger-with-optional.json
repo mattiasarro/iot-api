@@ -15,6 +15,10 @@
         {
             "name": "Vehicle",
             "description": "CoAP server (runs on any computer)"
+        },
+        {
+            "name": "Optional",
+            "description": "endpoints that do not have to be implemented to fulfill the spec"
         }
     ],
     "paths": {
@@ -81,6 +85,34 @@
             }
         },
         "/MANAGER_IP/parking_spots/{parkingSpotId}/reservations": {
+            "get": {
+                "tags": [
+                    "Manager",
+                    "Optional"
+                ],
+                "description": "[OPTIONAL: this is to showcase how a REST interface would look like, but is not required to fulfill the spec]\nGets reservations of a particular ParkingSpot. This endpoint is here mostly for the sake of completeness, as the information is embedded in a ParkingSpot object anyway.\n",
+                "parameters": [
+                    {
+                        "name": "parkingSpotId",
+                        "in": "path",
+                        "description": "ParkingSpot ID",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "Reservations",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Reservation"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Manager"
@@ -138,6 +170,59 @@
             }
         },
         "/MANAGER_IP/parking_spots/{parkingSpotId}/reservations/{reservationId}": {
+            "put": {
+                "tags": [
+                    "Manager",
+                    "Optional"
+                ],
+                "description": "Note: This is an optional feature, not needed according to spec.\nUpdate the reservation. \n \n",
+                "parameters": [
+                    {
+                        "name": "parkingSpotId",
+                        "in": "path",
+                        "description": "ParkingSpot ID",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "reservationId",
+                        "in": "path",
+                        "description": "Reservation ID",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "from",
+                        "in": "formData",
+                        "description": "Start time of reservation",
+                        "type": "integer",
+                        "required": true
+                    },
+                    {
+                        "name": "to",
+                        "in": "formData",
+                        "description": "End time of reservation",
+                        "type": "integer",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully changed reservation",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Response"
+                        }
+                    },
+                    "409": {
+                        "description": "There was a time conflict",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Response"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "tags": [
                     "Manager"
