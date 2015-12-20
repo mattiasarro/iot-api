@@ -95,6 +95,13 @@
                         "required": true
                     },
                     {
+                        "name": "vehicleId",
+                        "in": "formData",
+                        "type": "string",
+                        "description": "vehicle license plate number",
+                        "required": true
+                    },
+                    {
                         "name": "from",
                         "in": "formData",
                         "description": "Start time of reservation",
@@ -228,6 +235,12 @@
                     "items": {
                         "$ref": "#/definitions/Reservation"
                     }
+                },
+                "occupancies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Occupancy"
+                    }
                 }
             }
         },
@@ -239,6 +252,24 @@
                     "type": "string",
                     "description": "Id of the reservation"
                 },
+                "vehicleId": {
+                    "type": "string",
+                    "description": "Id of the vehicle that either reserved the spot. This attribute is present in the output only if the client is \"admin\" (e.g. Visualization Service) or vehicleId is the same as the Vehicle making the query."
+                },
+                "from": {
+                    "type": "number",
+                    "description": "Start time (unix timestamp) of reservation."
+                },
+                "to": {
+                    "type": "number",
+                    "description": "Start time (unix timestamp) of reservation."
+                }
+            }
+        },
+        "Occupancy": {
+            "type": "object",
+            "description": "Each parking spot can have many occupancies (when the parking spot had state \"occupied\").",
+            "properties": {
                 "vehicleId": {
                     "type": "string",
                     "description": "Id of the vehicle that either reserved the spot. This attribute is present in the output only if the client is \"admin\" (e.g. Visualization Service) or vehicleId is the same as the Vehicle making the query."
